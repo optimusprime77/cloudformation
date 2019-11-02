@@ -1,0 +1,30 @@
+[
+	{
+		"ParameterKey" : "Environment",
+		"ParameterValue": "dev"
+    },
+    {
+		"ParameterKey" : "ECSCluster",
+		"ParameterValue": "ECS-Fargate-dev"
+    },
+	{
+		"ParameterKey" : "DesiredCount",
+		"ParameterValue": "1"
+	},
+	{
+		"ParameterKey" : "MemoryAllocation",
+		"ParameterValue": "3072"
+	},
+	{
+		"ParameterKey" : "CPU",
+		"ParameterValue": "512"
+	},
+	{
+		"ParameterKey" : "RepoaccountID",
+		"ParameterValue": "887599381655"
+	},
+	{
+		"ParameterKey" : "RepoName",
+		"ParameterValue": "pcr-debtregister-events-app-snapshots"
+	}
+]
