@@ -32,7 +32,7 @@
 		"ParameterValue": "8000"
 	},
 	{
-		"ParameterKey" : "ECSCluster",
+		"ParameterKey" : "ECSClusterName",
 		"ParameterValue": "AppLayer"
 	},
 	{

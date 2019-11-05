@@ -23,7 +23,7 @@ Parameters:
   ContainerPort:
     Description: Port on which the application will startup inside the container
     Type: Number
-  ECSCluster:
+  ECSClusterName:
     Type: String
     Description: Cluster Name
   AppName:
@@ -51,7 +51,7 @@ Resources:
         CPU: !Ref CPU
         MemoryAllocation: !Ref MemoryAllocation
         ContainerPort: !Ref ContainerPort
-        ECSCluster: !Ref ECSCluster
+        ECSClusterName: !Ref ECSClusterName
         AppName: !Ref AppName
         VPCId: !Ref VPCId
         SecretName: !Ref SecretName

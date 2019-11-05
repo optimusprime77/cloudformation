@@ -22,7 +22,7 @@ Parameters:
   ContainerPort:
     Description: Port on which the application will startup inside the container
     Type: Number
-  ECSCluster:
+  ECSClusterName:
     Type: String
     Description: Cluster Name
   AppName:
@@ -151,3 +151,8 @@ Resources:
             - !Ref FargateSecurityGroup
           Subnets:
             - !Ref SubnetId
+
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ECSClusterName
