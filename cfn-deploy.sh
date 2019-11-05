@@ -10,5 +10,4 @@ aws cloudformation package \
 # Deploy Cloudformation templates
 aws cloudformation deploy \
     --stack-name crudapp-fargate \
-    --template-file mainstack-packaged.yml \
-
+    --template-file mainstack-packaged.yml
