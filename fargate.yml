@@ -143,4 +143,5 @@ Resources:
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: DISABLED
-          SecurityGroups: !Ref FargateSecurityGroup
+          SecurityGroups:
+            - !Ref FargateSecurityGroup
