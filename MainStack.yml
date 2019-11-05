@@ -55,3 +55,4 @@ Resources:
         AppName: !Ref AppName
         VPCId: !Ref VPCId
         SecretName: !Ref SecretName
+        SubnetId: !Ref SubnetId
