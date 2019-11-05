@@ -8,6 +8,7 @@ aws cloudformation package \
     --output-template-file mainstack-packaged.yml
 
 # Deploy Cloudformation templates
-aws cloudformation deploy \
+aws cloudformation create-stack \
     --stack-name crudapp-fargate \
-    --template-file mainstack-packaged.yml
+    --template-body file://mainstack-packaged.yml \
+    --parameters file://parameterfile-dev.json
