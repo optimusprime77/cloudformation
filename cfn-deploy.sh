@@ -8,7 +8,9 @@ aws cloudformation package \
     --output-template-file mainstack-packaged.yml
 
 # Deploy Cloudformation templates
+# Specify capabilities as the template contains IAM Resources
 aws cloudformation create-stack \
     --stack-name crudapp-fargate \
     --template-body file://mainstack-packaged.yml \
-    --parameters file://parameterfile-dev.json
+    --parameters file://parameterfile-dev.json \
+    --capabilities CAPABILITY_NAMED_IAM
