@@ -9,15 +9,15 @@
 	},
 	{
 		"ParameterKey" : "RepoUsername",
-		"ParameterValue": "sandbox"
+		"ParameterValue": "optimusprime77"
 	},
 	{
 		"ParameterKey" : "RepoName",
-		"ParameterValue": "1"
+		"ParameterValue": "quebec_django"
 	},
 	{
 		"ParameterKey" : "ApplicationImageTag",
-		"ParameterValue": "sandbox"
+		"ParameterValue": "latest"
 	},
 	{
 		"ParameterKey" : "CPU",
