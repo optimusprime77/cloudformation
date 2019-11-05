@@ -31,7 +31,9 @@ Parameters:
   SecretName:
     Type: String
     Description: Secret Name for Docker hub credential storage
-
+  VPCId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC to host the fargate service.
 Resources:
   CrudAppOnFargateStack:
     Type: AWS::CloudFormation::Stack
