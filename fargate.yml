@@ -123,7 +123,7 @@ Resources:
       ToPort: 8000
       CidrIp: 0.0.0.0/0
   FargateSecurityGroupEgress:
-    Type: AWS::EC2::SecurityGroupEngress
+    Type: AWS::EC2::SecurityGroupEgress
     Properties:
       Description: Engress towards public.
       GroupId: !Ref 'FargateSecurityGroup'
