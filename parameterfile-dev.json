@@ -46,5 +46,9 @@
 	{
 		"ParameterKey" : "SecretName",
 		"ParameterValue": "docker_hub_creds-pjy8wt"
+	},
+	{
+		"ParameterKey" : "SubnetId",
+		"ParameterValue": "subnet-934e06db"
 	}
 ]
