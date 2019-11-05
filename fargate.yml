@@ -1,46 +1,41 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Template for Provisioning an ECS Cluster
+Description: Template for Provisioning an ECS Fargate Cluster
 Parameters:
   Environment:
     Type: String
-    Default: dev
   DesiredCount:
     Type: Number
-    Default: 1
-  RepoaccountID:
+    Description: Desired number of tasks.
+  RepoUsername:
      Type: String
-     Default: 333495684591
   RepoName:
     Type: String
-    Default: debtregister-events-app
-  AppImageVersion:
+  ApplicationImageTag:
      Type: String
-     Description: Docker image version
-     Default: "master-2.4.5.4-82"
+     Description: Docker image version tag
   CPU:
      Type: Number
      Description: Number of CPUs to be assigned to the container
-     Default: 256
   MemoryAllocation:
      Type: Number
      Description: Softlimit  for the memory
-     Default: 512
-  AppName:
-     Type: String
-     Description: ArtifactID for the microservice
-     Default: "EventsSender"
   ContainerPort:
     Description: Port on which the application will startup inside the container
     Type: Number
-    Default: 8080
   ECSCluster:
-    Description: Cluster Name
     Type: String
+    Description: Cluster Name
+  AppName:
+    Type: String
+  SecretName:
+    Type: String
+    Description: Secret Name for Docker hub credential storage
+
 Resources:
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: !Sub "debtreg-java-eventssender-${AWS::StackName}"
+      Family: !Sub "python-django-crud-webapp-${Environment}-${AWS::AccountId}"
       TaskRoleArn: !Join ['/', [!Join [":", ["arn:aws:iam:", !Ref "AWS::AccountId" ,"role"]] , !Ref RootRole] ]
       ExecutionRoleArn: !Join ['/', [!Join [":", ["arn:aws:iam:", !Ref "AWS::AccountId" ,"role"]] , !Ref RootRole] ]
       Memory: !Ref MemoryAllocation
@@ -48,12 +43,13 @@ Resources:
       NetworkMode: awsvpc
       ContainerDefinitions:
         - Name: !Ref AppName
-          Image: !Join [ ":" , [!Join ["/", [ !Join [".", [!Ref RepoaccountID, "dkr.ecr", !Ref "AWS::Region", "amazonaws.com"]  ] , !Ref RepoName ]], !Ref AppImageVersion  ]]
+          Image: !Join [ ":", [ !Join [ "/" , [!Ref RepoUsername, !Ref RepoName] ] , !Ref ApplicationImageTag] ]
+          RepositoryCredentials:
+            CredentialsParameter: !Join [ ":" ,[ "arn" , "aws" , "secretsmanager", !Ref "AWS::Region" , !Ref "AWS::AccountId", "secret", !Ref SecretName]]
           Essential: true
-          Memory: !Ref MemoryAllocation
           PortMappings:
-            - ContainerPort: 443
-              HostPort: 443
+            - ContainerPort: 8000
+              HostPort: 8000
               Protocol: TCP
           LogConfiguration:
             LogDriver: awslogs
@@ -77,56 +73,63 @@ Resources:
         Statement:
           - Effect: "Allow"
             Action:
-              - "kms:Encrypt"
-              - "kms:Decrypt"
-            Resource:
-              - !Join [":",["arn:aws:kms", !Ref "AWS::Region", !Ref "AWS::AccountId", "key/*"]]
-          - Effect: "Allow"
-            Action:
-              - "kms:ListKeys"
-              - "kms:ListAliases"
               - "ecr:GetAuthorizationToken"
               - "ecr:BatchCheckLayerAvailability"
               - "ecr:GetDownloadUrlForLayer"
               - "ecr:BatchGetImage"
               - "logs:CreateLogStream"
               - "logs:PutLogEvents"
+              - "secretsmanager:GetSecretValue"
             Resource: "*"
-      PolicyName: !Join ["", ["csp-rootrolepermissions-", !Ref AppName, !Ref Environment ,"-policy"]]
+      PolicyName: !Sub "${AppName}-${Environment}-task-policy"
       Roles:
         - !Ref RootRole
+
   RootRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
-          -
-            Effect: "Allow"
+          - Effect: "Allow"
             Principal:
               Service:
                 - "ecs-tasks.amazonaws.com"
             Action:
               - "sts:AssumeRole"
-      RoleName: !Join ["-", [!Ref Environment, "taskrole", !Ref AppName]]
+      RoleName: !Sub "${AppName}-${Environment}-task-role"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonSSMFullAccess
-        - arn:aws:iam::aws:policy/AmazonS3FullAccess
-        - arn:aws:iam::aws:policy/AmazonSQSFullAccess
+
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub /ecs/${AWS::StackName}
 
-  CustomlogSubscriptionFilter:
-    Type: AWS::Logs::SubscriptionFilter
-    Metadata:
-      Use: Pushes logs from Cloudwatch to the Centralized logging destination.
+  FargateSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
     Properties:
-      DestinationArn: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:destination:splunkdest-eventsender-${Environment}'
-      FilterPattern: ''
-      LogGroupName: !Ref LogGroup
-      
+      GroupDescription: Access to the Fargate containers
+      VpcId: !Ref VPCId
+  FargateSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Ingress from the public on port #8000
+      GroupId: !Ref "FargateSecurityGroup"
+      IpProtocol: tcp
+      FromPort: 8000
+      ToPort: 8000
+      CidrIp: 0.0.0.0/0
+    FargateSecurityGroupEgress:
+      Type: AWS::EC2::SecurityGroupEngress
+      Properties:
+        Description: Engress towards public.
+        GroupId: !Ref 'FargateSecurityGroup'
+        IpProtocol: tcp
+        FromPort: 0
+        ToPort: 35535
+        CidrIp: 0.0.0.0/0
+
   FargateService:
     Type: AWS::ECS::Service
     Properties:
@@ -134,13 +137,8 @@ Resources:
       DesiredCount: !Ref DesiredCount
       TaskDefinition: !Ref TaskDefinition
       LaunchType: FARGATE
-      ServiceName: !Sub "debtreg-${Environment}-eventsender-java-application"
+      ServiceName: !Sub "${AppName}-${Environment}-python-application"
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: DISABLED
-          SecurityGroups:
-            - Fn::ImportValue:
-                Fn::Sub: "eventssender-${Environment}"
-          Subnets:
-            - !ImportValue CoreVPC:PrivateSubnetAz1
-            - !ImportValue CoreVPC:PrivateSubnetAz2
+          SecurityGroups: !Ref FargateSecurityGroup

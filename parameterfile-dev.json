@@ -1,30 +1,50 @@
 [
 	{
 		"ParameterKey" : "Environment",
-		"ParameterValue": "dev"
-    },
-    {
-		"ParameterKey" : "ECSCluster",
-		"ParameterValue": "ECS-Fargate-dev"
+		"ParameterValue": "sandbox"
     },
 	{
 		"ParameterKey" : "DesiredCount",
 		"ParameterValue": "1"
 	},
 	{
-		"ParameterKey" : "MemoryAllocation",
-		"ParameterValue": "3072"
+		"ParameterKey" : "RepoUsername",
+		"ParameterValue": "sandbox"
+	},
+	{
+		"ParameterKey" : "RepoName",
+		"ParameterValue": "1"
+	},
+	{
+		"ParameterKey" : "ApplicationImageTag",
+		"ParameterValue": "sandbox"
 	},
 	{
 		"ParameterKey" : "CPU",
 		"ParameterValue": "512"
 	},
 	{
-		"ParameterKey" : "RepoaccountID",
-		"ParameterValue": "887599381655"
+		"ParameterKey" : "MemoryAllocation",
+		"ParameterValue": "512"
 	},
 	{
-		"ParameterKey" : "RepoName",
-		"ParameterValue": "pcr-debtregister-events-app-snapshots"
+		"ParameterKey" : "ContainerPort",
+		"ParameterValue": "8000"
+	},
+	{
+		"ParameterKey" : "ECSCluster",
+		"ParameterValue": "AppLayer"
+	},
+	{
+		"ParameterKey" : "AppName",
+		"ParameterValue": "CrudApp"
+	},
+	{
+		"ParameterKey" : "VPCId",
+		"ParameterValue": "vpc-c4444ba2"
+	},
+	{
+		"ParameterKey" : "SecretName",
+		"ParameterValue": "docker_hub_creds-pjy8wt"
 	}
 ]

@@ -1,156 +1,52 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "Service template for running Application instance in container"
+Description: "Template for running Application instance in container"
 
 Parameters:
-   DesiredCount:
-     Description: Number of instances of this task that should run in the cluster
-     Type: Number
-     Default: 1
-
-   AppName:
-     Type: String
-     Description: ArtifactID for the microservice
-     Default: debtreg-events-app
-
-   ContainerPort:
-     Description: Port on which the application will startup inside the container
-     Type: Number
-     Default: 8080
-
-   CPU:
-     Type: Number
-     Description: Number of CPUs to be assigned to the container
-     Default: 512
-
-   MemoryAllocation:
-     Type: Number
-     Description: Softlimit  for the memory
-     Default: 768
-
-   AppImageVersion:
-     Type: String
-     Description: Docker image version
-     Default: "master-0.0.9-17"
-
-   ContextPath:
-     Type: String
-     Description: Context path for the microservice
-     Default: /
-
-   HealthEndPoint:
-     Type: String
-     Description: The health endpoint after the contextpath
-     Default: /health-check
-
-   Environment:
-     Type: String
-     Description: Environment to which the microservice to be deployed
-     AllowedValues: ['prod', 'dev', 'sit','uat']
-     Default: dev
-
-   ContainerscalingcooldownPeriod:
-     Type: Number
-     Description: The amount of time, in seconds, after a scaling activity completes before any further trigger-related scaling activities can start. Parameter Value should in seconds
-     Default: 60
-
-   ContainerServiceMonitoring:
-     Type: String
-     Description: Please select either one of the Metricname for ECS Host Monitoring
-     AllowedValues:
-       - CPUUtilization
-       - MemoryUtilization
-     Default: MemoryUtilization
-
-   ContainerScaleUpThreshold:
-     Type: Number
-     Description: Container Scale Up Threshold. Parameter value should range from 10 to 100
-     Default: 70
-
-
-   ContainerScaleUpEvaluationPeriod:
-     Type: Number
-     Description: Container ScaleUp EvaluationPeriod. Parameter value should be in minutes
-     Default: 3
-
-   ContainerScaleDownThreshold:
-     Type: Number
-     Description: Container ScaleUp Threshold. Parameter value should range from 10 to 100
-     Default: 30
-
-   ContainerScaleDownEvaluationPeriod:
+  Environment:
+    Type: String
+  DesiredCount:
     Type: Number
-    Description: Container ScaleDown Threshold. Parameter value should be in minutes
-    Default: 3
-
-   ECSCluster:
+    Description: Desired number of tasks.
+  RepoUsername:
     Type: String
-    Description: Name of the ECS Cluster
-    Default: ECS-debtreg-events-dev
-
-   ListenerRulePriority:
-     Type: Number
-     Description: Prioirty to be set for the ListenerRule
-     Default: 1
-
-   ListenerRuleWildCardPriority:
-     Type: Number
-     Description: Prioirty to be set for the wildcard ListenerRule
-     Default: 2
-
-   DTPath:
-     Type: String
-     Default: "/opt/dynatrace-7.1"
-
-   DTVolumeName:
-     Type: String
-     Default: "DTVolume"
-
-   SpringProfileActive:
-     Type: String
-     Default: dev
-
-   SpringProfileInclude:
-     Type: String
-     Default: swagger
-
-   ListnerExportValue:
-     Type: String
-     Default: alblistenerarn-dev
-
-   RepoaccountID:
-     Type: String
-     Default: 333495684591
-
-   RepoName:
-     Type: String
-     Default: debtregister-events-app
-
-   TargetGroupPort:
-     Type: String
-     Default: 8080
-
-   TargetGroupProtocol:
-     Type: String
-     Default: HTTP
-
-   HealthCheckProtocol:
+  RepoName:
     Type: String
-    Default: HTTP
-   ApplicationImageVersion:
-    Description: Application Image Version Number/tag for ECR Repository Docker Image.
+  ApplicationImageTag:
     Type: String
-    Default: master-1.4-10
+    Description: Docker image version tag
+  CPU:
+    Type: Number
+    Description: Number of CPUs to be assigned to the container
+  MemoryAllocation:
+    Type: Number
+    Description: Softlimit  for the memory
+  ContainerPort:
+    Description: Port on which the application will startup inside the container
+    Type: Number
+  ECSCluster:
+    Type: String
+    Description: Cluster Name
+  AppName:
+    Type: String
+  SecretName:
+    Type: String
+    Description: Secret Name for Docker hub credential storage
+
 Resources:
-  eventsenderservice:
+  CrudAppOnFargateStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: fargate.yml
       Parameters:
-        ECSCluster: !Ref ECSCluster
-        DesiredCount: !Ref DesiredCount
-        AppImageVersion: !Ref ApplicationImageVersion
         Environment: !Ref Environment
+        DesiredCount: !Ref DesiredCount
+        RepoUsername: !Ref RepoUsername
+        RepoName: !Ref RepoName
+        ApplicationImageTag: !Ref ApplicationImageTag
         CPU: !Ref CPU
         MemoryAllocation: !Ref MemoryAllocation
-        RepoaccountID: !Ref RepoaccountID
-        RepoName: !Ref RepoName
+        ContainerPort: !Ref ContainerPort
+        ECSCluster: !Ref ECSCluster
+        AppName: !Ref AppName
+        VPCId: !Ref VPCId
+        SecretName: !Ref SecretName
