@@ -54,8 +54,8 @@ Resources:
             CredentialsParameter: !Join [ ":" ,[ "arn" , "aws" , "secretsmanager", !Ref "AWS::Region" , !Ref "AWS::AccountId", "secret", !Ref SecretName]]
           Essential: true
           PortMappings:
-            - ContainerPort: 3000
-              HostPort: 80
+            - ContainerPort: !Ref ContainerPort
+              HostPort: !Ref ContainerPort
               Protocol: TCP
           LogConfiguration:
             LogDriver: awslogs
@@ -116,11 +116,11 @@ Resources:
   FargateSecurityGroupIngress:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
-      Description: Ingress from the public on port #8000
+      Description: Ingress from the public on port #3000
       GroupId: !Ref "FargateSecurityGroup"
       IpProtocol: tcp
-      FromPort: 8000
-      ToPort: 8000
+      FromPort: !Ref ContainerPort
+      ToPort: !Ref ContainerPort
       CidrIp: 0.0.0.0/0
   FargateSecurityGroupEgress:
     Type: AWS::EC2::SecurityGroupEgress
