@@ -13,7 +13,7 @@
 	},
 	{
 		"ParameterKey" : "RepoName",
-		"ParameterValue": "quebec_django"
+		"ParameterValue": "quebec_flask"
 	},
 	{
 		"ParameterKey" : "ApplicationImageTag",
@@ -37,7 +37,7 @@
 	},
 	{
 		"ParameterKey" : "AppName",
-		"ParameterValue": "CrudApp"
+		"ParameterValue": "HelloWorld"
 	},
 	{
 		"ParameterKey" : "VPCId",
