@@ -2,13 +2,11 @@
 
 ### Requirements
 
-1. Python 3
+Bash
 
 ### How to run the templates.
         
-        python3 -m pip install -U boto3             # Install boto3
-        aws configure --profile cfn-deploy          # Please provide access credentials imteractively 
-        python cfn-deploy.py -env sandbox           # cfn deployment script
+        ./cfn-deploy.sh                     # Run cloudformation deployment script.
         
 ### Template Structure
 
