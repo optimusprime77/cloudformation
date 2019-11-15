@@ -41,7 +41,7 @@ Resources:
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: !Sub "python-django-crud-webapp-${Environment}-${AWS::AccountId}"
+      Family: !Sub "python-flask-webapp-${Environment}-${AWS::AccountId}"
       TaskRoleArn: !Join ['/', [!Join [":", ["arn:aws:iam:", !Ref "AWS::AccountId" ,"role"]] , !Ref RootRole] ]
       ExecutionRoleArn: !Join ['/', [!Join [":", ["arn:aws:iam:", !Ref "AWS::AccountId" ,"role"]] , !Ref RootRole] ]
       Memory: !Ref MemoryAllocation
@@ -54,8 +54,8 @@ Resources:
             CredentialsParameter: !Join [ ":" ,[ "arn" , "aws" , "secretsmanager", !Ref "AWS::Region" , !Ref "AWS::AccountId", "secret", !Ref SecretName]]
           Essential: true
           PortMappings:
-            - ContainerPort: 8000
-              HostPort: 8000
+            - ContainerPort: 3000
+              HostPort: 80
               Protocol: TCP
           LogConfiguration:
             LogDriver: awslogs
@@ -79,10 +79,6 @@ Resources:
         Statement:
           - Effect: "Allow"
             Action:
-              - "ecr:GetAuthorizationToken"
-              - "ecr:BatchCheckLayerAvailability"
-              - "ecr:GetDownloadUrlForLayer"
-              - "ecr:BatchGetImage"
               - "logs:CreateLogStream"
               - "logs:PutLogEvents"
               - "secretsmanager:GetSecretValue"
